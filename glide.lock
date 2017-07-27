@@ -1,0 +1,8 @@
+hash: f92d7ad16f043c2fe4d9e7f0814991e6511287d314e65d31ef0e3c2e0d65b9b2
+updated: 2017-07-27T12:40:19.93038635+08:00
+imports:
+- name: github.com/codegangsta/cli
+  version: 0bdeddeeb0f650497d603c4ad7b20cfe685682f6
+- name: github.com/go-redis/redis
+  version: a005081ecd2d0d963a1a20efda049223205cf90a
+testImports: []
