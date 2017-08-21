@@ -65,6 +65,7 @@ func scanKeys(redis *redis.Client, filter string) error {
 	var keys []string
 	var err error
 	fmt.Fprintln(os.Stderr, "Dump Redis database with filter", filter)
+	chunkSize := 100
 
 	for {
 		keys, cursor, err = redis.Scan(cursor, filter, 1000).Result()
@@ -91,7 +92,11 @@ func scanKeys(redis *redis.Client, filter string) error {
 					if err != nil { return err }
 					fmt.Printf("DEL %s\n", escape(key))
 					if len(v) > 0 {
-						fmt.Printf("RPUSH %s %s\n", escape(key), strings.Join(escapeSlice(v), " "))
+						for i := 0; i < len(v); i += chunkSize {
+							end := i + chunkSize
+							if end > len(v) { end = len(v) }
+							fmt.Printf("RPUSH %s %s\n", escape(key), strings.Join(escapeSlice(v[i:end]), " "))
+						}
 						fmt.Printf("EXPIRE %s %v\n", escape(key), ttl.Seconds())
 					}
 
@@ -100,7 +105,11 @@ func scanKeys(redis *redis.Client, filter string) error {
 					if err != nil { return err }
 					fmt.Printf("DEL %s\n", escape(key))
 					if len(v) > 0 {
-						fmt.Printf("SADD %s %s\n", escape(key), strings.Join(escapeSlice(v), " "))
+						for i := 0; i < len(v); i += chunkSize {
+							end := i + chunkSize
+							if end > len(v) { end = len(v) }
+							fmt.Printf("SADD %s %s\n", escape(key), strings.Join(escapeSlice(v[i:end]), " "))
+						}
 						fmt.Printf("EXPIRE %s %v\n", escape(key), ttl.Seconds())
 					}
 
